@@ -3,7 +3,7 @@ import { my_characters } from "./data.js";
 let characters = my_characters;
 
 // Watch for changes in characters
-chrome.storage.onChanged.addListener((changes, _namespace) => {
+browser.storage.onChanged.addListener((changes, _namespace) => {
 	characters = changes?.dnd_sync?.newValue?.characters || {};
 	setTabs(characters);
 });
@@ -12,7 +12,7 @@ chrome.storage.onChanged.addListener((changes, _namespace) => {
 setTabs(characters);
 
 // Check if SM, DC or DNDB
-chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
+browser.tabs.query({currentWindow: true, active: true}, (tabs) => {
 	const current_page = tabs[0].url;
 	const isDNDB = current_page.includes("dndbeyond.com");
 	const isSM = current_page.includes("shieldmaiden.app");

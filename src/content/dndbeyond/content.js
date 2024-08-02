@@ -5,7 +5,7 @@
  * "sync" - syncCharacter
  */ 
 
-chrome.runtime.onMessage.addListener((request, response, sendRequest) => {
+browser.runtime.onMessage.addListener((request, response, sendRequest) => {
 	console.log('message received')
 	if (request.sync) {
 		syncCharacter();

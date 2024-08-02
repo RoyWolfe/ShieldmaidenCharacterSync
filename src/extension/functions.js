@@ -3,7 +3,7 @@
  * @param {string} func
  */
 export const sendMessage = async (func) => {
-	await chrome.runtime.sendMessage({function: func});
+	await browser.runtime.sendMessage({function: func});
 };
 
 /**
@@ -29,7 +29,7 @@ export const syncCharacter = async (e) => {
  * @returns {string} url
  */
 export const getCurrentTab = async () => {
-	const tabs = await chrome.tabs.query({currentWindow: true, active: true});
+	const tabs = await browser.tabs.query({currentWindow: true, active: true});
 	return tabs[0].url;
 }
 
@@ -48,9 +48,9 @@ export const calcMod = (value) => {
  */
 export const navigate = (event) => {
 	const element = event.target;
-	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+	browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
 		const tab = tabs[0];
-		chrome.tabs.update(tab.id, {url: element.getAttribute("href")});
+		browser.tabs.update(tab.id, {url: element.getAttribute("href")});
 	});
 };
 

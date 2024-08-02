@@ -27,7 +27,7 @@ const deleteCharacter = (e) => {
 	li.parentNode.removeChild(li);
 	delete characters[id];
 	storage.dnd_sync.characters = characters;
-	chrome.storage.sync.set(storage);
+	browser.storage.sync.set(storage);
 };
 
 // Render Character List Items
@@ -198,7 +198,7 @@ for(const pill of pills) {
 }
 
 // Watch for changes
-chrome.storage.onChanged.addListener((changes, _namespace) => {
+browser.storage.onChanged.addListener((changes, _namespace) => {
 	characters = changes?.dnd_sync?.newValue?.characters || {};
 	character_list.innerHTML = "";
 	renderCharacters(Object.values(characters));

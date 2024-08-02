@@ -9,7 +9,7 @@ input.addEventListener("keydown", (e) => {
   if(e.key === "ArrowDown") { getHistory(-1); }
 });
 
-chrome.storage.session.get(["rolls"], (result) => {
+browser.storage.session.get(["rolls"], (result) => {
   const rolls = result.rolls || [];
   
   for(const roll of rolls) {
@@ -106,11 +106,11 @@ export function storeRoll(roll, label) {
 			total: roll.total
 	};
 
-	// Store in Chrome
-	chrome.storage.session.get(["rolls"], (result) => {
+	// Store in browser
+	browser.storage.session.get(["rolls"], (result) => {
 			const current = result.rolls || [];
 			current.push(new_roll);
-			chrome.storage.session.set({ rolls: current });
+			browser.storage.session.set({ rolls: current });
 	});
 
 	// Add to HTML list
@@ -197,7 +197,7 @@ export function executeInput(input) {
 function runCommand(command) {
 	const list = document.getElementById("rolls");
 	if(command === "/clear") {
-		chrome.storage.session.set({ rolls: [] }, () => {
+		browser.storage.session.set({ rolls: [] }, () => {
 			list.innerHTML = "";
 		});
 	}
@@ -231,7 +231,7 @@ function runCommand(command) {
 	}
 	if(command.match(/^\/m/g)) {
 		// Fetch macros
-		chrome.storage.session.get(["macros"], (result) => {
+		browser.storage.session.get(["macros"], (result) => {
 			const current = result.macros || {};
 
 			if(command.match(/^\/ml/g)) {
@@ -255,7 +255,7 @@ function runCommand(command) {
 				const key = macro[0].trim();
 				const value = macro[1].trim();
 				current[key] = value;
-				chrome.storage.session.set({ macros: current }, () => {
+				browser.storage.session.set({ macros: current }, () => {
 					const feedback = document.createElement("li");
 					feedback.setAttribute("class", "roll");
 					feedback.innerHTML = '<div class="info"><span class="success">Macro created</span><br/>'+
@@ -272,7 +272,7 @@ function runCommand(command) {
 
 function rollMacro(macro) {
 	macro = macro.replace(/^#/g, "");
-	chrome.storage.session.get(["macros"], (result) => {
+	browser.storage.session.get(["macros"], (result) => {
 		if(result?.macros?.[macro]) {
 			executeInput(result.macros[macro]);
 		}
@@ -282,10 +282,10 @@ function rollMacro(macro) {
 function deleteMacro(macro) {
 	const list = document.getElementById("rolls");
 	macro = macro.replace(/^\/md /g, "");
-	chrome.storage.session.get(["macros"], (result) => {
+	browser.storage.session.get(["macros"], (result) => {
 		const current = result?.macros;
 		delete current[macro];
-		chrome.storage.session.set({ macros: current }, () => {
+		browser.storage.session.set({ macros: current }, () => {
 			const feedback = document.createElement("li");
 				feedback.setAttribute("class", "roll");
 				feedback.innerHTML = `<div class="info error">Macro ${macro} deleted<br/></div>`;
@@ -304,13 +304,13 @@ function createCommandEvents() {
 
 function saveHistory(input) {
 	const max = 20;
-	chrome.storage.session.get(["history"], (result) => {
+	browser.storage.session.get(["history"], (result) => {
 		const current = result.history || [];
 		current.unshift(input);
 		if(current.length > max) {
 			current.pop();
 		}
-		chrome.storage.session.set({ history: current });
+		browser.storage.session.set({ history: current });
 	});
 }
 
@@ -318,7 +318,7 @@ let index = -1;
 export function getHistory(diff) {
 	const input = document.getElementById("roll-string");
 	index += diff;
-	chrome.storage.session.get(["history"], (result) => {
+	browser.storage.session.get(["history"], (result) => {
 		const current = result.history || [];
 		if(index < -1) {
 			index = current.length-1;

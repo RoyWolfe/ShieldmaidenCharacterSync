@@ -5,27 +5,27 @@ const isLocalhost = /^https?:\/\/localhost.*/;
 
 const getCurrentTab = async () => {
 	const queryOptions = { active: true, lastFocusedWindow: true };
-	const [tab] = await chrome.tabs.query(queryOptions);
+	const [tab] = await browser.tabs.query(queryOptions);
 	return tab;
 }
 
 const syncCharacter = async () => {
 	console.log("Sync character")
 	const tab = await getCurrentTab();
-	chrome.tabs.sendMessage(tab.id, { sync:'send id with message in future' })
+	browser.tabs.sendMessage(tab.id, { sync:'send id with message in future' })
 }
 
-chrome.runtime.onInstalled.addListener(() => {
-	chrome.storage.sync.get({dnd_sync: {}}, (result) => {
+browser.runtime.onInstalled.addListener(() => {
+	browser.storage.sync.get({dnd_sync: {}}, (result) => {
 		const storage = result.dnd_sync;
 		storage.active = true;
-		chrome.storage.sync.set({dnd_sync: storage}, () => {
+		browser.storage.sync.set({dnd_sync: storage}, () => {
 			console.log("dnd sync is active")
 		})
 	})
 })
 
-chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((req, sender, sendResponse) => {
 	console.log('Received message from:', sender.tab ? 'from content script:' + sender.tab.url : 'from extension')
 	if (req.function) {
 		const func_name = req.function
@@ -36,12 +36,12 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 })
 
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	console.log('updated tab')
 	if (changeInfo.status === 'complete') {
 		if (isDndBeyond.test(tab.url)) {
 			console.log("Is dnd beyond!")
-			chrome.scripting.executeScript({
+			browser.scripting.executeScript({
 				target: { tabId: tabId },
 				files: ["content/dndbeyond_character.js"]
 			})
@@ -49,7 +49,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 		if (isDiceCloud.test(tab.url)) {
 			console.log("Is Dice Cloud!")
-			chrome.scripting.executeScript({
+			browser.scripting.executeScript({
 				target: { tabId: tabId },
 				files: ["content/dicecloud_character.js"]
 			})
@@ -57,7 +57,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 		if (isShieldmaiden.test(tab.url)) {
 			console.log("Is Shieldmaiden (the best dnd app)!")
-			chrome.scripting.executeScript({
+			browser.scripting.executeScript({
 				target: { tabId: tabId },
 				files: ["content/shieldmaiden_character.js"]
 			})
@@ -68,10 +68,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 /* Receive messages from 3rd party sites
  * Listens to the requestContent
  */
-chrome.runtime.onMessageExternal.addListener(async (request, sender, sendResponse) => {
+browser.runtime.onMessageExternal.addListener(async (request, sender, sendResponse) => {
 	console.group(`Received request from:`, sender.url);
 
-	const storage = await chrome.storage.sync.get({dnd_sync: {}});
+	const storage = await browser.storage.sync.get({dnd_sync: {}});
 	const content = {};
 
 	// Content requests
@@ -83,7 +83,7 @@ chrome.runtime.onMessageExternal.addListener(async (request, sender, sendRespons
 		}
 		if (request.request_content.includes("version")) {
 			console.log("Version");
-			content.version = chrome.runtime.getManifest().version;
+			content.version = browser.runtime.getManifest().version;
 		}
 		console.groupEnd();
 	}
